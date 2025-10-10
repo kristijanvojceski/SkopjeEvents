@@ -17,21 +17,30 @@ type Activity = {
   hostImageUrl: string;
 };
 
-type Profile={
-  id: string
-  displayName:string
-  bio?:string
-  imageUrl?:string 
-}
+type Profile = {
+  id: string;
+  displayName: string;
+  bio?: string;
+  imageUrl?: string;
+};
 
 type Photo = {
-  id:string
-  url:string
-}
+  id: string;
+  url: string;
+};
 
 type User = {
   id: string;
   email: string;
+  displayName: string;
+  imageUrl?: string;
+};
+
+type ChatComment = {
+  id: string;
+  createdAt: Date;
+  body: string;
+  userId: string;
   displayName: string;
   imageUrl?: string;
 };
