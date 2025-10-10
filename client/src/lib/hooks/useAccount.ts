@@ -1,14 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoginScheme } from "../schemas/loginScheme";
 import agent from "../api/agent";
-import { useLocation, useNavigate } from "react-router";
+import {  useNavigate } from "react-router";
 import { RegisterScheme } from "../schemas/registerScheme";
 import { toast } from "react-toastify";
 
 export const useAccount = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const loginUser = useMutation({
     mutationFn: async (creds: LoginScheme) => {
@@ -49,9 +48,7 @@ export const useAccount = () => {
       return response.data;
     },
     enabled:
-      !queryClient.getQueryData(["user"]) &&
-      location.pathname !== "/login" &&
-      location.pathname !== "/register",
+      !queryClient.getQueryData(["user"])
   });
 
   return {
