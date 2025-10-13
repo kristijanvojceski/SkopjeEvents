@@ -96,7 +96,9 @@ export default function ActivityForm() {
         />
 
         <Box display="flex" justifyContent="end" gap={3}>
-          <Button color="inherit">Cancel</Button>
+          <Button color="inherit" onClick={() => navigate(-1)}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             color="success"
