@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers;
 
 public class AccountController(SignInManager<User> signInManager,
-    IEmailSender<User> emailSender,IConfiguration config) : BaseApiController
+    IEmailSender<User> emailSender, IConfiguration config) : BaseApiController
 {
     [AllowAnonymous]
     [HttpPost("register")]
@@ -43,7 +43,7 @@ public class AccountController(SignInManager<User> signInManager,
 
     [AllowAnonymous]
     [HttpGet("resendConfirmEmail")]
-    public async Task<ActionResult> ResendConfirmEmail(string? email,string? userId)
+    public async Task<ActionResult> ResendConfirmEmail(string? email, string? userId)
     {
         if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(userId))
         {
@@ -100,6 +100,20 @@ public class AccountController(SignInManager<User> signInManager,
         await signInManager.SignOutAsync();
 
         return NoContent();
+    }
+
+    [HttpPost("change-password")]
+    public async Task<ActionResult> ChangePassword(ChangePasswordDto passwordDto)
+    {
+        var user = await signInManager.UserManager.GetUserAsync(User);
+
+        if (user == null) return Unauthorized();
+
+        var result = await signInManager.UserManager.ChangePasswordAsync(user, passwordDto.CurrentPassword, passwordDto.NewPassword);
+
+        if (result.Succeeded) return Ok();
+
+        return BadRequest(result.Errors.First().Description);
     }
 
 }
