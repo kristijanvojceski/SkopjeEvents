@@ -11,9 +11,25 @@ import "react-calendar/dist/Calendar.css";
 import Calendar from "react-calendar";
 import { useStore } from "../../../lib/hooks/useStore";
 import { observer } from "mobx-react-lite";
+import { useAccount } from "../../../lib/hooks/useAccount";  // adjust path as needed
+import { useNavigate } from "react-router";
 
-const ActivityFilters = observer (function ActivityFilters() {
-  const {activityStore: {setFilter,setStartDate,filter,startDate}} = useStore();
+const ActivityFilters = observer(function ActivityFilters() {
+  const {
+    activityStore: { setFilter, setStartDate, filter, startDate },
+  } = useStore();
+
+  const { currentUser } = useAccount();
+  const navigate = useNavigate();
+
+  function handleFilterChange(value: string) {
+    // Redirect unauthenticated users trying to set restricted filters
+    if ((value === "isGoing" || value === "isHost") && !currentUser) {
+      navigate("/login");
+      return;
+    }
+    setFilter(value);
+  }
 
   return (
     <Box
@@ -34,13 +50,13 @@ const ActivityFilters = observer (function ActivityFilters() {
             Filters
           </Typography>
           <MenuList>
-            <MenuItem selected={filter==='all'} onClick={()=>setFilter('all')}>
+            <MenuItem selected={filter === "all"} onClick={() => handleFilterChange("all")}>
               <ListItemText primary="All events" />
             </MenuItem>
-            <MenuItem  selected={filter==='isGoing'} onClick={()=>setFilter('isGoing')}>
+            <MenuItem selected={filter === "isGoing"} onClick={() => handleFilterChange("isGoing")}>
               <ListItemText primary="I'm going" />
             </MenuItem>
-            <MenuItem  selected={filter==='isHost'} onClick={()=>setFilter('isHost')}>
+            <MenuItem selected={filter === "isHost"} onClick={() => handleFilterChange("isHost")}>
               <ListItemText primary="I'm hosting" />
             </MenuItem>
           </MenuList>
@@ -68,11 +84,11 @@ const ActivityFilters = observer (function ActivityFilters() {
             },
           }}
         >
-          <Calendar value={startDate} onChange={date=>setStartDate(date as Date)} />
+          <Calendar value={startDate} onChange={(date) => setStartDate(date as Date)} />
         </Box>
       </Box>
     </Box>
   );
-})
+});
 
 export default ActivityFilters;

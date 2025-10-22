@@ -74,22 +74,34 @@ export const useAccount = () => {
   });
 
   const changePassword = useMutation({
-    mutationFn: async (data:ChangePasswordScheme)=>{
-      await agent.post('/account/change-password',data);
-    }
-  })
+    mutationFn: async (data: ChangePasswordScheme) => {
+      await agent.post("/account/change-password", data);
+    },
+  });
 
   const forgotPassword = useMutation({
-    mutationFn: async (email:string) =>{
-      await agent.post('/forgotPassword',{email})
-    }
-  })
+    mutationFn: async (email: string) => {
+      await agent.post("/forgotPassword", { email });
+    },
+  });
 
   const resetPassword = useMutation({
-    mutationFn: async(data: ResetPassword) =>{
-      await agent.post('/resetPassword',data)
+    mutationFn: async (data: ResetPassword) => {
+      await agent.post("/resetPassword", data);
+    },
+  });
+
+  const fetchGithubToken = useMutation({
+    mutationFn: async (code: string) => {
+      const response = await agent.post(`/account/github-login?code=${code}`);
+      return response.data;
+    },
+    onSuccess: async ()=>{
+      await queryClient.invalidateQueries({
+        queryKey: ['user']
+      })
     }
-  })
+  });
 
   return {
     loginUser,
@@ -101,6 +113,7 @@ export const useAccount = () => {
     resendConfirmationEmail,
     changePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    fetchGithubToken, 
   };
 };

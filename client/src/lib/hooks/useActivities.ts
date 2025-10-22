@@ -45,17 +45,18 @@ export const useActivities = (id?: string) => {
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
 
-    enabled: !id && location.pathname === "/activities" && !!currentUser,
+    enabled: !id && location.pathname === "/activities",
     select: (data) => ({
       ...data,
       pages: data.pages.map((page) => ({
         ...page,
         items: page.items.map((activity) => {
+          if (!currentUser) return activity;
           const host = activity.attendees.find((x) => x.id === activity.hostId);
           return {
             ...activity,
-            isHost: currentUser?.id === activity.hostId,
-            isGoing: activity.attendees.some((x) => x.id === currentUser?.id),
+            isHost: currentUser.id === activity.hostId,
+            isGoing: activity.attendees.some((x) => x.id === currentUser.id),
             hostImageUrl: host?.imageUrl,
           };
         }),
