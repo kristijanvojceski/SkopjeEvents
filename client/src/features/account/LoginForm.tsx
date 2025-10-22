@@ -3,7 +3,7 @@ import { useAccount } from "../../lib/hooks/useAccount";
 import { loginScheme, LoginScheme } from "../../lib/schemas/loginScheme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { LockOpen } from "@mui/icons-material";
+import { GitHub, LockOpen } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useState } from "react";
@@ -16,14 +16,13 @@ export default function LoginForm() {
   const location = useLocation();
   const {
     control,
-    watch,
     handleSubmit,
+    watch,
     formState: { isValid, isSubmitting },
   } = useForm<LoginScheme>({
     mode: "onTouched",
     resolver: zodResolver(loginScheme),
   });
-
   const email = watch("email");
 
   const handleResendEmail = async () => {
@@ -32,7 +31,7 @@ export default function LoginForm() {
       setNotVerified(false);
     } catch (error) {
       console.log(error);
-      toast.error("Problem sending email please check email address");
+      toast.error("Problem sending email - please check email address");
     }
   };
 
@@ -47,6 +46,12 @@ export default function LoginForm() {
         }
       },
     });
+  };
+
+  const loginWithGithub = () => {
+    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+    const redirectUrl = import.meta.env.VITE_REDIRECT_URL;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirectUri=${redirectUrl}&scope=read:user user:email`;
   };
 
   return (
@@ -71,19 +76,15 @@ export default function LoginForm() {
         color="secondary.main"
       >
         <LockOpen fontSize="large" />
-
         <Typography variant="h4">Sign in</Typography>
       </Box>
-
       <TextInput label="Email" control={control} name="email" />
-
       <TextInput
         label="Password"
         type="password"
         control={control}
         name="password"
       />
-
       <Button
         type="submit"
         disabled={!isValid || isSubmitting}
@@ -91,6 +92,16 @@ export default function LoginForm() {
         size="large"
       >
         Login
+      </Button>
+      <Button
+        onClick={loginWithGithub}
+        startIcon={<GitHub />}
+        sx={{ backgroundColor: "black" }}
+        type="button"
+        variant="contained"
+        size="large"
+      >
+        Login with Github
       </Button>
       {notVerified ? (
         <Box display="flex" flexDirection="column" justifyContent="center">
@@ -110,6 +121,7 @@ export default function LoginForm() {
           <Typography>
             Forgot password? Click <Link to="/forgot-password">here</Link>
           </Typography>
+
           <Typography sx={{ textAlign: "center" }}>
             Don't have an account?
             <Typography
